@@ -1,0 +1,7 @@
+*.py[cod]
+*.egg-info
+
+.coverage
+.python-version
+.cache/
+.tox/
