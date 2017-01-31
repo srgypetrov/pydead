@@ -18,7 +18,8 @@ class PyParser(ast.NodeVisitor):
         self.visit(ast_node)
         return self.prepare_results()
 
-    def get_ast_node(self, path):
+    @staticmethod
+    def get_ast_node(path):
         module_string = open(path).read()
         try:
             node = ast.parse(module_string, filename=path)
@@ -70,11 +71,12 @@ class PyParser(ast.NodeVisitor):
     def get_node_path(self, name):
         return '{0}.{1}'.format(self.relpath, name)
 
-    def get_name_value(self, node):
+    @staticmethod
+    def get_name_value(node):
         name = getattr(node, 'name', None)
-        id = getattr(node, 'id', None)
+        node_id = getattr(node, 'id', None)
         attr = getattr(node, 'attr', None)
-        return name or id or attr
+        return name or node_id or attr
 
     def visit(self, node):
         method = 'visit_' + node.__class__.__name__.lower()

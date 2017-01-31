@@ -1,4 +1,4 @@
 coveralls
 pytest
 pytest-cov
-tox
+twine

@@ -37,7 +37,7 @@ def find_duplicate_endings(defined, used):
             if defined_item.endswith(used_item):
                 overall.setdefault(used_item, set()).add(defined_item)
 
-    for key, value in overall.items():
+    for _, value in overall.items():
         if len(value) > 1:
             maybe_unused.append(value)
     return maybe_unused
