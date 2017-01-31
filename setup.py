@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pydead',
-    version='1.0',
+    version='1.0.1',
     author='Sergey Petrov',
     author_email='srgypetrov@ya.ru',
     url='https://github.com/SrgyPetrov/pydead',
