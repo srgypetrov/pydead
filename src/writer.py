@@ -31,3 +31,23 @@ def separated(text, color='red', sepchar='='):
     if len(line) + len(sepchar.rstrip()) <= fullwidth:
         line += sepchar.rstrip()
     colored(line, color)
+
+
+def report(unused, maybe_unused):
+    if unused:
+        separated('UNUSED PYTHON CODE')
+        for item in sorted(unused, key=lambda x: (x.lower(), x.line)):
+            colored('- {}:{}: '.format(item.filepath, item.line), 'cyan')
+            colored('Unused {} "{}"\n'.format(item.node, item.name), 'yellow')
+    else:
+        separated('NO UNUSED PYTHON CODE', 'green')
+
+    if maybe_unused:
+        colored('\n\nIt is recommended to check the next groups of items, they may be unused:\n',
+                'white')
+        for group in maybe_unused:
+            separated('-', 'white', '-')
+            for item in group:
+                colored('- {}:{}: '.format(item.filepath, item.line), 'white')
+                colored('{} "{}"\n'.format(item.node, item.name), 'yellow')
+        separated('-', 'white', '-')

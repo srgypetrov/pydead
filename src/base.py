@@ -1,7 +1,7 @@
 from .search import search
 from .parsers import py_parser
 from .config import conf
-from .utils import report
+from .writer import report
 
 
 def check():
