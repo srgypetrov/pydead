@@ -1,6 +1,7 @@
 import ast
 
-from .utils import ParsedItem, error, get_dot_relpath
+from .writer import error
+from .utils import ParsedItem, get_dot_relpath
 
 
 class PyParser(ast.NodeVisitor):

@@ -3,7 +3,7 @@ import os
 
 from .search import search
 from .parsers import py_parser
-from .writer import report
+from .writer import report, error
 
 
 @click.command()
@@ -12,6 +12,8 @@ from .writer import report
               'given pattern. Unix filename pattern matching used.')
 def check(directory, exclude):
     files = search(['.py'], exclude or (), directory)
+    if not files['.py']:
+        error(3)
     parsed = parse_files(directory, files['.py'], py_parser)
     unused, maybe_unused = find_unused(
         parsed['defined_objects'],
@@ -21,11 +23,14 @@ def check(directory, exclude):
 
 
 def parse_files(basedir, paths, parser):
-    result = {}
+    result = {
+        'defined_objects': set(),
+        'used_objects': set()
+    }
     for path in paths:
         parsed = parser.parse(basedir, path)
         for key, value in parsed.items():
-            result.setdefault(key, set()).update(value)
+            result[key].update(value)
     return result
 
 

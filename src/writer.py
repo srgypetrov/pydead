@@ -1,4 +1,20 @@
 import click
+import sys
+
+
+ERRORS = {
+    1: "Syntax error in file {0}: {1}",
+    2: "Unable to detect unused names, 'from {0} import *' used in file {1}.",
+    3: "No files found"
+}
+
+
+def error(code, str_args=None):
+    err = ERRORS[code]
+    if isinstance(str_args, list):
+        err = err.format(*str_args)
+    click.secho(err, fg='red', err=True)
+    sys.exit()
 
 
 def separated(text, fg, sepchar='='):
@@ -13,7 +29,7 @@ def report(unused, maybe_unused):
         for item in sorted(unused, key=lambda x: (x.lower(), x.line)):
             click.echo('{}{}{}'.format(
                 click.style('- {}:'.format(item.filepath), fg='cyan'),
-                click.style('{}:'.format(item.line), fg='blue'),
+                click.style('{}:'.format(item.line), fg='red'),
                 click.style('Unused {} "{}"'.format(item.node, item.name), fg='yellow'),
             ))
     else:

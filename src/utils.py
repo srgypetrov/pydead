@@ -1,18 +1,4 @@
 import os
-import sys
-import click
-
-
-ERRORS = {
-    1: "Syntax error in file {0}: {1}\n",
-    2: "Unable to detect unused names, 'from {0} import *' used in file {1}.\n"
-}
-
-
-def error(code, str_args):
-    assert isinstance(str_args, list)
-    click.secho(ERRORS[code].format(*str_args), fg='red', err=True)
-    sys.exit()
 
 
 def get_dot_relpath(basedir, path):
