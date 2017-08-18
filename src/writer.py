@@ -1,53 +1,30 @@
-import termios
-import fcntl
-import struct
-import os
-import sys
-
-colors = dict(red=31, green=32, yellow=33, blue=34, cyan=36, white=37)
+import click
 
 
-def get_terminal_width():
-    try:
-        call = fcntl.ioctl(1, termios.TIOCGWINSZ, "\000" * 8)
-        width = struct.unpack("hhhh", call)[1]
-    except:
-        width = int(os.environ.get('COLUMNS', 80))
-    return width if width >= 40 else 80
-
-
-def colored(text, color='white'):
-    text = '\x1b[{0}m{1}\x1b[0m'.format(colors.get(color, 37), text)
-    sys.stdout.write(text)
-
-
-def separated(text, color='red', sepchar='='):
-    fullwidth = get_terminal_width()
-    if sys.platform == "win32":
-        fullwidth -= 1
-    n = (fullwidth - len(text) - 2) // (2 * len(sepchar))
-    fill = sepchar * n
-    line = "{} {} {}".format(fill, text, fill)
-    if len(line) + len(sepchar.rstrip()) <= fullwidth:
-        line += sepchar.rstrip()
-    colored(line, color)
+def separated(text, fg, sepchar='='):
+    width = click.get_terminal_size()[0]
+    text = text.center(width, sepchar)
+    click.secho(text, fg=fg)
 
 
 def report(unused, maybe_unused):
     if unused:
-        separated('UNUSED PYTHON CODE')
+        separated('UNUSED PYTHON CODE', fg='red')
         for item in sorted(unused, key=lambda x: (x.lower(), x.line)):
-            colored('- {}:{}: '.format(item.filepath, item.line), 'cyan')
-            colored('Unused {} "{}"\n'.format(item.node, item.name), 'yellow')
+            click.echo('{}{}{}'.format(
+                click.style('- {}:'.format(item.filepath), fg='cyan'),
+                click.style('{}:'.format(item.line), fg='blue'),
+                click.style('Unused {} "{}"'.format(item.node, item.name), fg='yellow'),
+            ))
     else:
-        separated('NO UNUSED PYTHON CODE', 'green')
+        separated('NO UNUSED PYTHON CODE', fg='green')
 
     if maybe_unused:
-        colored('\n\nIt is recommended to check the next groups of items, they may be unused:\n',
-                'white')
+        click.secho('It is recommended to check the next groups of items, they may be unused:',
+                    fg='white')
         for group in maybe_unused:
-            separated('-', 'white', '-')
+            click.echo('-' * click.get_terminal_size()[0])
             for item in group:
-                colored('- {}:{}: '.format(item.filepath, item.line), 'white')
-                colored('{} "{}"\n'.format(item.node, item.name), 'yellow')
-        separated('-', 'white', '-')
+                click.secho('- {}:{}: '.format(item.filepath, item.line), fg='white')
+                click.secho('{} "{}"\n'.format(item.node, item.name), fg='yellow')
+        click.echo('-' * click.get_terminal_size()[0])

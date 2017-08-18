@@ -10,9 +10,10 @@ class PyParser(ast.NodeVisitor):
         self.defined = set()
         self.used = set()
         self.class_child_names = set()
-        self.relpath = get_dot_relpath(path)
+        self.relpath = get_dot_relpath(self.basedir, path)
 
-    def parse(self, path):
+    def parse(self, basedir, path):
+        self.basedir = basedir
         self.reset(path)
         ast_node = self.get_ast_node(path)
         self.visit(ast_node)
@@ -116,5 +117,6 @@ class PyParser(ast.NodeVisitor):
             if name == '*':
                 error(2, [node.module, self.relpath])
             self.imported[name] = '{0}.{1}'.format(module_path, item.name)
+
 
 py_parser = PyParser()

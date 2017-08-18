@@ -1,8 +1,7 @@
-import sys
 import os
+import sys
+import click
 
-from .config import conf
-from .writer import colored
 
 ERRORS = {
     1: "Syntax error in file {0}: {1}\n",
@@ -12,13 +11,13 @@ ERRORS = {
 
 def error(code, str_args):
     assert isinstance(str_args, list)
-    colored(ERRORS[code].format(*str_args), 'red')
+    click.secho(ERRORS[code].format(*str_args), fg='red', err=True)
     sys.exit()
 
 
-def get_dot_relpath(path):
+def get_dot_relpath(basedir, path):
     cutted_path, _ = os.path.splitext(path)
-    relpath = os.path.relpath(cutted_path, conf.BASE_DIR)
+    relpath = os.path.relpath(cutted_path, basedir)
     return relpath.replace('/', '.')
 
 
