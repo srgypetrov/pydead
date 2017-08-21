@@ -27,10 +27,11 @@ def parse_files(basedir, paths, parser):
         'defined_objects': set(),
         'used_objects': set()
     }
-    for path in paths:
-        parsed = parser.parse(basedir, path)
-        for key, value in parsed.items():
-            result[key].update(value)
+    with click.progressbar(paths) as bar:
+        for path in bar:
+            parsed = parser.parse(basedir, path)
+            for key, value in parsed.items():
+                result[key].update(value)
     return result
 
 
