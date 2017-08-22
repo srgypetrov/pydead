@@ -26,11 +26,11 @@ def separated(text, fg, sepchar='='):
 def report(unused, maybe_unused):
     if unused:
         separated('UNUSED PYTHON CODE', fg='red')
-        for item in sorted(unused, key=lambda x: (x.lower(), x.line)):
+        for node in sorted(unused, key=lambda x: (x.path.lower(), x.line)):
             click.echo('{}{}{}'.format(
-                click.style('- {}:'.format(item.filepath), fg='cyan'),
-                click.style('{}:'.format(item.line), fg='red'),
-                click.style('Unused {} "{}"'.format(item.node, item.name), fg='yellow'),
+                click.style('- {}:'.format(node.filepath), fg='cyan'),
+                click.style('{}:'.format(node.line), fg='red'),
+                click.style('Unused {} "{}"'.format(node.node_name, node.name), fg='yellow'),
             ))
     else:
         separated('NO UNUSED PYTHON CODE', fg='green')
@@ -40,7 +40,7 @@ def report(unused, maybe_unused):
                     fg='white')
         for group in maybe_unused:
             click.echo('-' * click.get_terminal_size()[0])
-            for item in group:
-                click.secho('- {}:{}: '.format(item.filepath, item.line), fg='white')
-                click.secho('{} "{}"\n'.format(item.node, item.name), fg='yellow')
+            for node in group:
+                click.secho('- {}:{}: '.format(node.filepath, node.line), fg='white')
+                click.secho('{} "{}"\n'.format(node.node_name, node.name), fg='yellow')
         click.echo('-' * click.get_terminal_size()[0])
