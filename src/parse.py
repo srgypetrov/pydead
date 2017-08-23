@@ -11,6 +11,8 @@ class PyFile(ast.NodeVisitor):
         self.path = path
         self.dot_path = get_dot_relpath(basedir, path)
         self.class_child_names = set()
+        self.used = set()
+        self.used_here = set()
         self.ast_used = set()
         self.ast_defined = set()
         self.ast_imported = dict()
@@ -32,7 +34,6 @@ class PyFile(ast.NodeVisitor):
         return ast_node.module
 
     def process_nodes(self):
-        self.used, self.used_here = set(), set()
         for node in self.ast_used:
             if node.module is not None and node.module in self.ast_imported:
                 self.used.add('{0}.{1}'.format(self.ast_imported[node.module], node.name))
@@ -111,16 +112,6 @@ class Node(object):
     def __repr__(self):
         return '<Node(path={0}, node_name={1}, line={2})>'.format(
             self.path, self.node_name, self.line)
-
-    def __eq__(self, other):
-        if isinstance(other, self.__class__):
-            return self.path == other.path
-        if isinstance(other, str):
-            return self.path == other
-        return False
-
-    def __hash__(self):
-        return hash(self.path)
 
     @staticmethod
     def get_name_value(ast_node):
