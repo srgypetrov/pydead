@@ -3,9 +3,10 @@ import sys
 
 
 ERRORS = {
-    1: "Syntax error in file {0}: {1}",
+    1: "Syntax error in file {0}: {1}.",
     2: "Unable to detect unused names, 'from {0} import *' used in file {1}.",
-    3: "No files found"
+    3: "No files found.",
+    4: "Relative import goes beyond the scan directory: {0}:{1}."
 }
 
 
@@ -30,7 +31,7 @@ def report(unused, maybe_unused):
             click.echo('{}{}{}'.format(
                 click.style('- {}:'.format(node.filepath), fg='cyan'),
                 click.style('{}:'.format(node.line), fg='red'),
-                click.style('Unused {} "{}"'.format(node.node_name, node.name), fg='yellow'),
+                click.style('Unused {} "{}"'.format(node.node_type, node.name), fg='yellow'),
             ))
     else:
         separated('NO UNUSED PYTHON CODE', fg='green')
@@ -42,5 +43,5 @@ def report(unused, maybe_unused):
             click.echo('-' * click.get_terminal_size()[0])
             for node in group:
                 click.secho('- {}:{}: '.format(node.filepath, node.line), fg='white')
-                click.secho('{} "{}"\n'.format(node.node_name, node.name), fg='yellow')
+                click.secho('{} "{}"\n'.format(node.node_type, node.name), fg='yellow')
         click.echo('-' * click.get_terminal_size()[0])
