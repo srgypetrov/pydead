@@ -14,9 +14,9 @@ def check(directory, exclude):
     files = search(['.py'], exclude or (), directory)
     if not files['.py']:
         error(3)
-    parsed = parse_files(directory, files['.py'])
-    unused, maybe_unused = find_unused(*parsed)
-    report(unused, maybe_unused)
+    defined, used = parse_files(directory, files['.py'])
+    unused = [node for node in defined if not node.path.endswith(tuple(used))]
+    report(unused)
 
 
 def parse_files(basedir, paths):
@@ -28,23 +28,3 @@ def parse_files(basedir, paths):
             defined.update(pyfile.defined)
             used.update(pyfile.used)
     return defined, used
-
-
-def find_unused(defined, used):
-    maybe_unused = find_duplicate_endings(defined, used)
-    unused = [node for node in defined if not node.path.endswith(tuple(used))]
-    return unused, maybe_unused
-
-
-def find_duplicate_endings(defined, used):
-    overall = {}
-    maybe_unused = []
-    for used_path in used:
-        for node in defined:
-            if node.path.endswith(used_path):
-                overall.setdefault(used_path, set()).add(node)
-
-    for _, value in overall.items():
-        if len(value) > 1:
-            maybe_unused.append(value)
-    return maybe_unused

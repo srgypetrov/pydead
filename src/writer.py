@@ -3,10 +3,10 @@ import sys
 
 
 ERRORS = {
-    1: "Syntax error in file {0}: {1}.",
-    2: "Unable to detect unused names, 'from {0} import *' used in file {1}.",
-    3: "No files found.",
-    4: "Relative import goes beyond the scan directory: {0}:{1}."
+    1: "\nSyntax error in file {0}: {1}.",
+    2: "\nUnable to detect unused names, 'from {0} import *' used in file {1}.",
+    3: "\nNo files found.",
+    4: "\nRelative import goes beyond the scan directory: {0}:{1}."
 }
 
 
@@ -24,7 +24,7 @@ def separated(text, fg, sepchar='='):
     click.secho(text, fg=fg)
 
 
-def report(unused, maybe_unused):
+def report(unused):
     if unused:
         separated('UNUSED PYTHON CODE', fg='red')
         for node in sorted(unused, key=lambda x: (x.path.lower(), x.line)):
@@ -35,13 +35,3 @@ def report(unused, maybe_unused):
             ))
     else:
         separated('NO UNUSED PYTHON CODE', fg='green')
-
-    if maybe_unused:
-        click.secho('It is recommended to check the next groups of items, they may be unused:',
-                    fg='white')
-        for group in maybe_unused:
-            click.echo('-' * click.get_terminal_size()[0])
-            for node in group:
-                click.secho('- {}:{}: '.format(node.filepath, node.line), fg='white')
-                click.secho('{} "{}"\n'.format(node.node_type, node.name), fg='yellow')
-        click.echo('-' * click.get_terminal_size()[0])
