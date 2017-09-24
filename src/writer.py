@@ -27,11 +27,13 @@ def separated(text, fg, sepchar='='):
 def report(unused):
     if unused:
         separated('UNUSED PYTHON CODE', fg='red')
-        for node in sorted(unused, key=lambda x: (x.path.lower(), x.line)):
-            click.echo('{}{}{}'.format(
-                click.style('- {}:'.format(node.filepath), fg='cyan'),
-                click.style('{}:'.format(node.line), fg='red'),
-                click.style('Unused {} "{}"'.format(node.node_type, node.name), fg='yellow'),
-            ))
+        for name, items in unused.items():
+            for item in sorted(items, key=lambda x: (x['path'].lower(), x['node'].lineno)):
+                filepath, item_name = item['path'].rsplit('.', 1)
+                click.echo('{}{}{}'.format(
+                    click.style('- {}:'.format(filepath), fg='cyan'),
+                    click.style('{}:'.format(item['node'].lineno), fg='red'),
+                    click.style('Unused {} "{}"'.format(name, item_name), fg='yellow'),
+                ))
     else:
         separated('NO UNUSED PYTHON CODE', fg='green')
