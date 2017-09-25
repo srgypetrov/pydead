@@ -10,14 +10,14 @@ class PyFile(ast.NodeVisitor):
         self.basedir = basedir
         self.path = path
         self.dot_path = get_dot_relpath(basedir, path)
+        self.used = set()
+        self.ast_used = set()
+        self.ast_imported = {}
         self.defined = {
             'class': [],
             'function': [],
             'name': []
         }
-        self.used = set()
-        self.ast_used = set()
-        self.ast_imported = {}
 
     def get_node(self):
         module_string = open(self.path).read()
@@ -40,11 +40,11 @@ class PyFile(ast.NodeVisitor):
     def process_items(self):
         used_here = set()
         for item in self.ast_used:
-            item_list = item.split('.')
-            key = item_list.pop(0)
-            if key in self.ast_imported:
-                value = '.'.join([self.ast_imported[key]] + item_list)
-                self.used.add(value)
+            # item_list = item.split('.')
+            # key = item_list.pop()
+            if item in self.ast_imported:
+                # value = '.'.join([self.ast_imported[key]] + item_list)
+                self.used.add(self.ast_imported[item])
             else:
                 used_here.add('{0}.{1}'.format(self.dot_path, item))
 

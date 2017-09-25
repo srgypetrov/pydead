@@ -1,5 +1,6 @@
 import click
 import os
+import re
 
 from .parse import PyFile
 from .search import search
@@ -20,7 +21,7 @@ def check(directory, exclude):
 
 
 def parse_files(basedir, paths):
-    defined, used = {}, set()
+    defined, used, init_imports = {}, set(), set()
     with click.progressbar(paths) as bar:
         for path in bar:
             pyfile = PyFile(basedir, path)
@@ -28,7 +29,18 @@ def parse_files(basedir, paths):
             for name, items in pyfile.defined.items():
                 defined.setdefault(name, []).extend(items)
             used.update(pyfile.used)
+            if path.endswith('__init__.py'):
+                init_imports.update(pyfile.ast_imported.values())
+    fix_init_imports(init_imports, used)
     return defined, used
+
+
+def fix_init_imports(init_imports, used):
+    for init_import in init_imports:
+        module_import = re.sub(r'\..+\.', '.', init_import)
+        if module_import in used:
+            used.remove(module_import)
+            used.add(init_import)
 
 
 def get_unused(defined, used):
