@@ -53,16 +53,30 @@ class PyFile(ast.NodeVisitor):
 
     def parse(self):
         node = self.get_node()
-        self.visit(node)
+        self.generic_visit(node)
         self.process_items()
 
     def visit(self, node):
-        method = 'visit_' + node.__class__.__name__.lower()
+        method = 'visit_{}'.format(node.__class__.__name__.lower())
         visitor = getattr(self, method, None)
         if visitor is not None:
             visitor(node)
-        else:
-            return self.generic_visit(node)
+        if not isinstance(node, ast.Attribute):
+            inner = isinstance(node, (ast.ClassDef, ast.FunctionDef))
+            return self.generic_visit(node, inner)
+
+    def generic_visit(self, node, inner=False):
+        for field, value in ast.iter_fields(node):
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, ast.Name) and inner:
+                        self.visit_name(item, inner)
+                    elif isinstance(item, ast.AST):
+                        self.generic_visit(item, inner) if inner else self.visit(item)
+            elif isinstance(value, ast.Name) and inner:
+                self.visit_name(value, inner)
+            elif isinstance(value, ast.AST):
+                self.generic_visit(value, inner) if inner else self.visit(value)
 
     def visit_attribute(self, node):
         if isinstance(node.ctx, ast.Load):
@@ -70,8 +84,11 @@ class PyFile(ast.NodeVisitor):
             while isinstance(node, ast.Attribute):
                 value.append(node.attr)
                 node = node.value
-            value.reverse()
             if isinstance(node, ast.Name) and node.id != 'self':
+                value.append(node.id)
+                value.reverse()
+                # print('\n' + '-' * 30)
+                # print('.'.join(value))
                 self.ast_used.add('.'.join(value))
 
     def visit_classdef(self, node):
@@ -100,9 +117,9 @@ class PyFile(ast.NodeVisitor):
             else:
                 self.ast_imported[name] = item.name
 
-    def visit_name(self, node):
+    def visit_name(self, node, inner=False):
         if isinstance(node.ctx, ast.Load):
             self.ast_used.add(node.id)
-        else:
+        elif not inner:
             path = '{0}.{1}'.format(self.dot_path, node.id)
             self.defined['name'].append({'path': path, 'node': node})
