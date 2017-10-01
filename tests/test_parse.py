@@ -222,11 +222,15 @@ class TestPyFile:
         pyfile.visit_import(node)
         assert pyfile.ast_imported == {'Bar': 'Foo'}
 
-    def test_visit_importfrom(self, pyfile):
-        node = ast.ImportFrom(names=[ast.alias(name='Foo', asname='Bar')],
-                              module='apps.app.module', level=0)
+    @pytest.mark.parametrize("name, asname, module, expected", [
+        ('Foo', 'Bar', 'apps.app.module', {'Bar': 'apps.app.module.Foo'}),
+        ('Foo', None, None, {'Foo': 'Foo'})
+    ])
+    def test_visit_importfrom(self, pyfile, name, asname, module, expected):
+        node = ast.ImportFrom(names=[ast.alias(name=name, asname=asname)],
+                              module=module, level=0)
         pyfile.visit_importfrom(node)
-        assert pyfile.ast_imported == {'Bar': 'apps.app.module.Foo'}
+        assert pyfile.ast_imported == expected
 
     def test_visit_importfrom_invalid(self, pyfile):
         node = ast.ImportFrom(names=[ast.alias(name='*', asname='')],
