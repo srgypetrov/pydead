@@ -38,9 +38,10 @@ class PyFile(ast.NodeVisitor):
 
     def get_relpath_from_import(self, node):
         if node.level != 0:
-            pathlist = self.dot_path.split('.')[:-node.level]
-            if node.level > 1 and not pathlist:
+            splitted_dot_path = self.dot_path.split('.')
+            if node.level > len(splitted_dot_path):
                 error(4, [self.path, node.lineno])
+            pathlist = splitted_dot_path[:-node.level]
             if node.module:
                 pathlist.append(node.module)
             return '.'.join(pathlist)
