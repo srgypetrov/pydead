@@ -3,16 +3,19 @@ import sys
 
 
 ERRORS = {
-    1: "\nSyntax error in file {0}: {1}.",
-    2: "\nUnable to detect unused names, 'from {0} import *' used in file {1}.",
-    3: "\nNo files found.",
-    4: "\nRelative import goes beyond the scan directory: {0}:{1}."
+    1: ("\nSyntax error in file {0}: {1}.", True),
+    2: ("\nUnable to detect unused names, 'from {0} import *' used in file {1}.", True),
+    3: ("\nNo files found.", False),
+    4: ("\nRelative import goes beyond the scan directory: {0}:{1}.", True)
 }
 
 
 def error(code, str_args=None):
-    err = ERRORS[code]
-    if isinstance(str_args, list):
+    assert code in ERRORS
+    err, args_required = ERRORS[code]
+    assert args_required == bool(str_args)
+    if args_required:
+        assert isinstance(str_args, (list, tuple))
         err = err.format(*str_args)
     click.secho(err, fg='red', err=True)
     sys.exit()
