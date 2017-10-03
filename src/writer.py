@@ -33,10 +33,10 @@ def report(unused):
         for name, items in unused.items():
             for item in sorted(items, key=lambda x: (x['path'].lower(), x['node'].lineno)):
                 filepath, item_name = item['path'].rsplit('.', 1)
-                click.echo('{}{}{}'.format(
-                    click.style('- {}:'.format(filepath), fg='cyan'),
-                    click.style('{}:'.format(item['node'].lineno), fg='red'),
-                    click.style('Unused {} "{}"'.format(name, item_name), fg='yellow'),
+                click.echo('{0}{1}{2}'.format(
+                    click.style('- {0}:'.format(filepath), fg='cyan'),
+                    click.style('{0}:'.format(item['node'].lineno), fg='red'),
+                    click.style('Unused {0} "{1}"'.format(name, item_name), fg='yellow'),
                 ))
     else:
         separated('NO UNUSED PYTHON CODE', fg='green')
