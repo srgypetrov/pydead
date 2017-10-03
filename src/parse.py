@@ -59,11 +59,11 @@ class PyFile(ast.NodeVisitor):
                 import_path, key, key_list = None, None, []
                 while item:
                     if import_path is not None:
-                        import_path = '.'.join([import_path, item.pop()])
+                        import_path = '.'.join((import_path, item.pop()))
                         self.used.add(import_path)
                     else:
-                        key = '.'.join(filter(None, [key, item.pop()]))
-                        key_list.append('.'.join([self.dot_path, key]))
+                        key = '.'.join(filter(None, (key, item.pop())))
+                        key_list.append('.'.join((self.dot_path, key)))
                         if key in self.ast_imported:
                             import_path = self.ast_imported[key]
                             self.used.add(import_path)
@@ -73,7 +73,7 @@ class PyFile(ast.NodeVisitor):
                 if item in self.ast_imported:
                     self.used.add(self.ast_imported[item])
                 else:
-                    used_here.add('.'.join([self.dot_path, item]))
+                    used_here.add('.'.join((self.dot_path, item)))
 
         for name, items in self.defined.items():
             self.defined[name] = [i for i in items if i['path'] not in used_here]
@@ -99,12 +99,12 @@ class PyFile(ast.NodeVisitor):
 
     def visit_classdef(self, node, *args):
         if node.col_offset == 0:
-            path = '.'.join([self.dot_path, node.name])
+            path = '.'.join((self.dot_path, node.name))
             self.defined['class'].append({'path': path, 'node': node})
 
     def visit_functiondef(self, node, *args):
         if node.col_offset == 0:
-            path = '.'.join([self.dot_path, node.name])
+            path = '.'.join((self.dot_path, node.name))
             self.defined['function'].append({'path': path, 'node': node})
 
     def visit_import(self, node, *args):
@@ -119,7 +119,7 @@ class PyFile(ast.NodeVisitor):
             if name == '*':
                 error(2, [node.module, self.dot_path])
             if module_path:
-                self.ast_imported[name] = '.'.join([module_path, item.name])
+                self.ast_imported[name] = '.'.join((module_path, item.name))
             else:
                 self.ast_imported[name] = item.name
 
@@ -127,5 +127,5 @@ class PyFile(ast.NodeVisitor):
         if isinstance(node.ctx, ast.Load):
             self.ast_used.append(node.id)
         elif not inner:
-            path = '.'.join([self.dot_path, node.id])
+            path = '.'.join((self.dot_path, node.id))
             self.defined['name'].append({'path': path, 'node': node})
