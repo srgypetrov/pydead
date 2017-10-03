@@ -1,6 +1,5 @@
 import click
 import os
-import re
 
 from .parse import PyFile
 from .search import search
@@ -15,36 +14,47 @@ def check(directory, exclude):
     files = search(['.py'], exclude or (), directory)
     if not files['.py']:
         error(3)
-    parsed = parse_files(directory, files['.py'])
-    unused = get_unused(*parsed)
+    init_imports, defined, used = parse_files(directory, files['.py'])
+    fix_init_imports(used, init_imports)
+    unused = get_unused(defined, used)
     report(unused)
 
 
 def parse_files(basedir, paths):
-    defined, used, init_imports = {}, set(), set()
+    init_imports, defined, used = {}, {}, set()
     with click.progressbar(paths) as bar:
         for path in bar:
             pyfile = PyFile(basedir, path)
             pyfile.parse()
+            used.update(pyfile.used)
             for name, items in pyfile.defined.items():
                 defined.setdefault(name, []).extend(items)
-            used.update(pyfile.used)
             if path.endswith('__init__.py'):
-                init_imports.update(pyfile.ast_imported.values())
-    fix_init_imports(init_imports, used)
-    return defined, used
+                module = pyfile.dot_path.rstrip('.__init__')
+                for item_name, item in pyfile.ast_imported.items():
+                    key = '.'.join((module, item_name))
+                    if key != item:
+                        init_imports[key] = item
+    return init_imports, defined, used
 
 
-def fix_init_imports(init_imports, used):
-    for init_import in init_imports:
-        module_import = re.sub(r'\..+\.', '.', init_import)
-        if module_import in used:
-            used.remove(module_import)
-            used.add(init_import)
+def fix_init_imports(used, init_imports):
+    for key, value in init_imports.items():
+        if key in used:
+            value = get_import_value(value, init_imports)
+            used.remove(key)
+            used.add(value)
+
+
+def get_import_value(value, init_imports):
+    if value in init_imports:
+        value = init_imports[value]
+        return get_import_value(value, init_imports)
+    return value
 
 
 def get_unused(defined, used):
     unused = {}
     for name, items in defined.items():
-        unused[name] = [item for item in items if not item['path'].endswith(tuple(used))]
+        unused[name] = [item for item in items if not item['path'] in used]
     return unused
