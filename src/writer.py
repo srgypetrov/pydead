@@ -30,7 +30,7 @@ def separated(text, fg, sepchar='='):
 def report(unused):
     if unused:
         separated('UNUSED PYTHON CODE', fg='red')
-        for name, items in unused.items():
+        for name, items in sorted(unused.items()):
             for item in sorted(items, key=lambda x: (x['path'].lower(), x['node'].lineno)):
                 filepath, item_name = item['path'].rsplit('.', 1)
                 click.echo('{0}{1}{2}'.format(
