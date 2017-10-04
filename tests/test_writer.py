@@ -31,7 +31,7 @@ def test_error(monkeypatch, code, str_args, expected):
         result = err_text
 
     monkeypatch.setattr(click, 'secho', mock_secho)
-    monkeypatch.setattr(sys, 'exit', lambda: None)
+    monkeypatch.setattr(sys, 'exit', lambda x: None)
 
     if expected == 'error':
         with pytest.raises(AssertionError):

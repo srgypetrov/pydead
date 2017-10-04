@@ -8,6 +8,15 @@ from src.parse import PyFile
 
 class TestPyFile:
 
+    def test_create_pyfile(self):
+        pyfile = PyFile('/home/project/', '/home/project/module1/file1.py')
+        assert pyfile.path == '/home/project/module1/file1.py'
+        assert pyfile.dot_path == 'module1.file1'
+        assert pyfile.used == set()
+        assert pyfile.ast_used == []
+        assert pyfile.ast_imported == {}
+        assert pyfile.defined == {'class': [], 'function': [], 'name': []}
+
     def test_generic_visit(self, monkeypatch, pyfile, node, inner, expected):
 
         pyfile.ast_visited = []

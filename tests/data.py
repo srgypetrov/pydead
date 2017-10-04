@@ -56,6 +56,105 @@ data = {
             }
         )]
     },
+    'test_parse_files': {
+        'names': ('data', 'exp_defined', 'exp_used', 'exp_imports'),
+        'params': [(
+            {
+                '/module2/file2.py': {
+                    'dot_path': 'module2.file2',
+                    'used': {
+                        'module1.func1',
+                        'module1.class1',
+                        'module4.name4',
+                        'module6.attr6a',
+                        'module6.attr6a.class6',
+                        'module6.attr6a.class6.attr6b',
+                        'module6.attr6a.class6.attr6b.attr6c'
+                    },
+                    'defined': {
+                        'class': [
+                            {'path': 'module2.file2.class1'}
+                        ],
+                        'function': [
+                            {'path': 'module2.file2.func1'}
+                        ],
+                        'name': [
+                            {'path': 'module2.file2.name1'},
+                            {'path': 'module2.file2.name2'}
+                        ]
+                    },
+                    'ast_imported': {
+                        'func1': 'module1.func1',
+                        'class1': 'module1.class1',
+                        'name4': 'module4.name4',
+                        'attr6a': 'module6.attr6a',
+                        'file2': 'module1.file2'
+                    }
+                },
+                '/module1/__init__.py': {
+                    'dot_path': 'module1.__init__',
+                    'used': set(),
+                    'defined': {
+                        'class': [],
+                        'function': [],
+                        'name': []
+                    },
+                    'ast_imported': {
+                        'func1': 'module1.file1.func1',
+                        'name1': 'module1.file1.name1',
+                        'class1': 'module1.dir1.file1.class1',
+                        'models': 'module1.models'
+                    }
+                },
+                '/module3/file3.py': {
+                    'dot_path': 'module3.file3',
+                    'used': {
+                        'module6.func6',
+                        'module7.class7'
+                    },
+                    'defined': {
+                        'class': [{'path': 'module3.file3.class1'}],
+                        'function': [],
+                        'name': [{'path': 'module2.file2.name1'}]
+                    },
+                    'ast_imported': {
+                        'func6': 'module6.func6',
+                        'class7': 'module7.class7'
+                    }
+                }
+            },
+            {
+                'class': [
+                    {'path': 'module2.file2.class1'},
+                    {'path': 'module3.file3.class1'}
+                ],
+                'function': [
+                    {'path': 'module2.file2.func1'}
+                ],
+                'name': [
+                    {'path': 'module2.file2.name1'},
+                    {'path': 'module2.file2.name2'},
+                    {'path': 'module2.file2.name1'}
+                ]
+            },
+            {
+                'module1.func1',
+                'module1.class1',
+                'module4.name4',
+                'module6.attr6a',
+                'module6.attr6a.class6',
+                'module6.attr6a.class6.attr6b',
+                'module6.attr6a.class6.attr6b.attr6c',
+                'module6.func6',
+                'module7.class7'
+            },
+            {
+                'module1.func1': 'module1.file1.func1',
+                'module1.name1': 'module1.file1.name1',
+                'module1.class1': 'module1.dir1.file1.class1'
+            }
+        )]
+    },
     'test_get_relpath_from_import': {
         'names': ('initial', 'expected'),
         'params': [

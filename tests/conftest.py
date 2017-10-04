@@ -1,5 +1,7 @@
 import pytest
 
+from collections import namedtuple
+from click.testing import CliRunner
 from src.parse import PyFile
 
 from .data import data
@@ -17,6 +19,16 @@ def test_files(fs):
 def pyfile():
     pyfile = PyFile('', 'apps/core/module/')
     return pyfile
+
+
+@pytest.fixture
+def mock_file():
+    return namedtuple('MockFile', ['parse', 'used', 'defined', 'dot_path', 'ast_imported'])
+
+
+@pytest.fixture
+def runner():
+    return CliRunner()
 
 
 def pytest_generate_tests(metafunc):
