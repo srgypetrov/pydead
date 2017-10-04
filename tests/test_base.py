@@ -20,7 +20,9 @@ def test_parse_files(monkeypatch, mock_file, data, exp_defined, exp_used, exp_im
     monkeypatch.setattr(base, 'PyFile', mock_file_create)
 
     init_imports, defined, used = base.parse_files('/basedir/', data.keys())
-    assert defined == exp_defined
+    assert sorted(defined['class'], key=lambda x: x['path']) == exp_defined['class']
+    assert sorted(defined['function'], key=lambda x: x['path']) == exp_defined['function']
+    assert sorted(defined['name'], key=lambda x: x['path']) == exp_defined['name']
     assert used == exp_used
     assert init_imports == exp_imports
 

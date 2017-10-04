@@ -12,12 +12,7 @@ def test_fix_extensions():
 def test_search(test_files):
     path = '/fs/'
     files = search(['.py', 'txt'], ['*bar*'], path)
-    assert files == {
-        '.py': [
-            os.path.join(path, 'foo/file2.py'),
-            os.path.join(path, 'file1.py')
-        ],
-        '.txt': [
-            os.path.join(path, 'file1.txt')
-        ]
-    }
+    assert sorted(files.keys()) == ['.py', '.txt']
+    assert sorted(files['.py']) == [os.path.join(path, 'file1.py'),
+                                    os.path.join(path, 'foo/file2.py')]
+    assert files['.txt'] == [os.path.join(path, 'file1.txt')]
