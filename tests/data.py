@@ -115,7 +115,7 @@ data = {
                     'defined': {
                         'class': [{'path': 'module3.file3.class1'}],
                         'function': [],
-                        'name': [{'path': 'module2.file2.name1'}]
+                        'name': [{'path': 'module3.file3.name1'}]
                     },
                     'ast_imported': {
                         'func6': 'module6.func6',
@@ -134,7 +134,7 @@ data = {
                 'name': [
                     {'path': 'module2.file2.name1'},
                     {'path': 'module2.file2.name2'},
-                    {'path': 'module2.file2.name1'}
+                    {'path': 'module3.file3.name1'}
                 ]
             },
             {
