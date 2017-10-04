@@ -7,7 +7,6 @@ from .utils import get_dot_relpath
 class PyFile(ast.NodeVisitor):
 
     def __init__(self, basedir, path):
-        self.basedir = basedir
         self.path = path
         self.dot_path = get_dot_relpath(basedir, path)
         self.used = set()
