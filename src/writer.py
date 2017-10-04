@@ -18,7 +18,7 @@ def error(code, str_args=None):
         assert isinstance(str_args, (list, tuple))
         err = err.format(*str_args)
     click.secho(err, fg='red', err=True)
-    sys.exit()
+    sys.exit(1)
 
 
 def separated(text, fg, sepchar='='):
