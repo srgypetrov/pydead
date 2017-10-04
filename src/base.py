@@ -39,18 +39,18 @@ def parse_files(basedir, paths):
 
 
 def fix_init_imports(used, init_imports):
+
+    def get_correct_value(value):
+        if value in init_imports:
+            value = init_imports[value]
+            return get_correct_value(value)
+        return value
+
     for key, value in init_imports.items():
         if key in used:
-            value = get_import_value(value, init_imports)
+            value = get_correct_value(value)
             used.remove(key)
             used.add(value)
-
-
-def get_import_value(value, init_imports):
-    if value in init_imports:
-        value = init_imports[value]
-        return get_import_value(value, init_imports)
-    return value
 
 
 def get_unused(defined, used):
