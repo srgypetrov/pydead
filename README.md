@@ -1,6 +1,6 @@
 ## PyDead
 
-Utility for searching of unused code in python projects.
+Utility for searching of unused code in python projects, such as module’s global classes, functions and names.
 
 ![Release](https://img.shields.io/github/release/SrgyPetrov/pydead.svg)
 ![Python Versions](https://img.shields.io/pypi/pyversions/pydead.svg)
@@ -12,18 +12,28 @@ Utility for searching of unused code in python projects.
 
 `pip install pydead`
 
-## Configuration
-
-You can create file `.pydead` in folder you want to check and specify names of files and directories that should be excluded (unix filename pattern matching used) as shown below:
-
-```
-[paths]
-exclude = *settings*
-          test_*
-          script_*.py
-
-```
-
 ## Usage
 
-Call `pydead` command in folder you want to check.
+```
+Usage: pydead [OPTIONS]
+
+Options:
+  -d, --directory TEXT  Directory of your project.
+  -e, --exclude TEXT    Exclude files and directories by the given pattern.
+                        Unix filename pattern matching used.
+  --help                Show this message and exit.
+```
+
+## Examples
+
+Search in current directory
+
+`$ pydead`
+
+Search in specific directory
+
+`$ pydead -d directory`
+
+Exclude files and directories
+
+`$ pydead -e '*settings*' -e 'script_*.py'`

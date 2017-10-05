@@ -2,13 +2,17 @@ from setuptools import setup
 
 setup(
     name='pydead',
-    version='1.1.1',
+    version='1.2.1',
     author='Sergey Petrov',
     author_email='srgypetrov@ya.ru',
     url='https://github.com/SrgyPetrov/pydead',
-    description='Utility for searching of unused code in python projects',
+    description=('Utility for searching of unused code in python projects, '
+                 'such as module’s global classes, functions and names.'),
     packages=['src'],
-    scripts=['pydead'],
+    install_requires=['Click'],
+    entry_points={
+        'console_scripts': ['pydead=src.base:check']
+    },
     classifiers=[
         'Environment :: Console',
         'Intended Audience :: Developers',

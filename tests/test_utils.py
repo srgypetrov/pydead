@@ -1,13 +1,14 @@
-import os
+import pytest
 
 from src.utils import get_dot_relpath
+from src.exceptions import PathMismatchError
 
 
-def test_get_dot_relpath_directory():
-    relpath = get_dot_relpath(os.path.join(os.getcwd(), 'tests/test_utils/'))
-    assert relpath == 'tests.test_utils'
-
-
-def test_get_dot_relpath_file():
-    relpath = get_dot_relpath(os.path.join(os.getcwd(), 'tests/test_utils/test.py'))
-    assert relpath == 'tests.test_utils.test'
+def test_get_dot_relpath(base, path, expected):
+    if expected == 'error':
+        with pytest.raises(PathMismatchError) as excinfo:
+            get_dot_relpath(base, path)
+        assert excinfo.value.args == (base, path)
+    else:
+        dot_path = get_dot_relpath(base, path)
+        assert dot_path == expected

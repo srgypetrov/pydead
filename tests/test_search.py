@@ -9,14 +9,10 @@ def test_fix_extensions():
     assert extensions == ['.py', '.txt']
 
 
-def test_search(filepath):
-    files = search(['.py', 'txt'], ['*bar*'], filepath)
-    assert files == {
-        '.py': [
-            os.path.join(filepath, 'file1.py'),
-            os.path.join(filepath, 'foo/file2.py')
-        ],
-        '.txt': [
-            os.path.join(filepath, 'file1.txt')
-        ]
-    }
+def test_search(test_files):
+    path = '/fs/'
+    files = search(['.py', 'txt'], ['*bar*'], path)
+    assert sorted(files.keys()) == ['.py', '.txt']
+    assert sorted(files['.py']) == [os.path.join(path, 'file1.py'),
+                                    os.path.join(path, 'foo/file2.py')]
+    assert files['.txt'] == [os.path.join(path, 'file1.txt')]

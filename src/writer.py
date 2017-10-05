@@ -1,53 +1,45 @@
-import termios
-import fcntl
-import struct
-import os
+import click
 import sys
 
-colors = dict(red=31, green=32, yellow=33, blue=34, cyan=36, white=37)
+from .exceptions import ArgumentError
 
 
-def get_terminal_width():
-    try:
-        call = fcntl.ioctl(1, termios.TIOCGWINSZ, "\000" * 8)
-        width = struct.unpack("hhhh", call)[1]
-    except:
-        width = int(os.environ.get('COLUMNS', 80))
-    return width if width >= 40 else 80
+ERRORS = {
+    1: ("\nSyntax error in file {0}: {1}.", 2),
+    2: ("\nUnable to detect unused names, 'from {0} import *' used in file {1}.", 2),
+    3: ("\nNo files found.", 0),
+    4: ("\nRelative import goes beyond the scan directory: {0}:{1}.", 2)
+}
 
 
-def colored(text, color='white'):
-    text = '\x1b[{0}m{1}\x1b[0m'.format(colors.get(color, 37), text)
-    sys.stdout.write(text)
+def error(code, str_args=None):
+    str_args = str_args or []
+    err, args_count = ERRORS[code]
+    if not isinstance(str_args, (list, tuple)):
+        raise ArgumentError('String arguments must be tuple or list', code, str_args)
+    if len(str_args) != args_count:
+        raise ArgumentError('Mismatch between error code and string arguments', code, str_args)
+    err = err.format(*str_args)
+    click.secho(err, fg='red', err=True)
+    sys.exit(1)
 
 
-def separated(text, color='red', sepchar='='):
-    fullwidth = get_terminal_width()
-    if sys.platform == "win32":
-        fullwidth -= 1
-    n = (fullwidth - len(text) - 2) // (2 * len(sepchar))
-    fill = sepchar * n
-    line = "{} {} {}".format(fill, text, fill)
-    if len(line) + len(sepchar.rstrip()) <= fullwidth:
-        line += sepchar.rstrip()
-    colored(line, color)
+def separated(text, fg, sepchar='='):
+    width = click.get_terminal_size()[0]
+    text = text.center(width, sepchar)
+    click.secho(text, fg=fg)
 
 
-def report(unused, maybe_unused):
-    if unused:
-        separated('UNUSED PYTHON CODE')
-        for item in sorted(unused, key=lambda x: (x.lower(), x.line)):
-            colored('- {}:{}: '.format(item.filepath, item.line), 'cyan')
-            colored('Unused {} "{}"\n'.format(item.node, item.name), 'yellow')
+def report(unused):
+    if any(unused.values()):
+        separated('UNUSED PYTHON CODE', fg='red')
+        for name, items in sorted(unused.items()):
+            for item in sorted(items, key=lambda x: (x['path'].lower(), x['node'].lineno)):
+                filepath, item_name = item['path'].rsplit('.', 1)
+                click.echo('{0}{1}{2}'.format(
+                    click.style('- {0}:'.format(filepath), fg='cyan'),
+                    click.style('{0}:'.format(item['node'].lineno), fg='red'),
+                    click.style('Unused {0} "{1}"'.format(name, item_name), fg='yellow'),
+                ))
     else:
-        separated('NO UNUSED PYTHON CODE', 'green')
-
-    if maybe_unused:
-        colored('\n\nIt is recommended to check the next groups of items, they may be unused:\n',
-                'white')
-        for group in maybe_unused:
-            separated('-', 'white', '-')
-            for item in group:
-                colored('- {}:{}: '.format(item.filepath, item.line), 'white')
-                colored('{} "{}"\n'.format(item.node, item.name), 'yellow')
-        separated('-', 'white', '-')
+        separated('NO UNUSED PYTHON CODE', fg='green')
