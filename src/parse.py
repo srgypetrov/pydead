@@ -4,7 +4,7 @@ from .writer import error
 from .utils import get_dot_relpath
 
 
-class PyFile(ast.NodeVisitor):
+class PyFile(object):
 
     def __init__(self, basedir, path):
         self.path = path
@@ -19,7 +19,7 @@ class PyFile(ast.NodeVisitor):
         }
 
     def generic_visit(self, node, inner=False):
-        for field, value in ast.iter_fields(node):
+        for _, value in ast.iter_fields(node):
             if isinstance(value, list):
                 for item in value:
                     if isinstance(item, ast.AST):
