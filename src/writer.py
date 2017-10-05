@@ -1,22 +1,25 @@
 import click
 import sys
 
+from .exceptions import ArgumentError
+
 
 ERRORS = {
-    1: ("\nSyntax error in file {0}: {1}.", True),
-    2: ("\nUnable to detect unused names, 'from {0} import *' used in file {1}.", True),
-    3: ("\nNo files found.", False),
-    4: ("\nRelative import goes beyond the scan directory: {0}:{1}.", True)
+    1: ("\nSyntax error in file {0}: {1}.", 2),
+    2: ("\nUnable to detect unused names, 'from {0} import *' used in file {1}.", 2),
+    3: ("\nNo files found.", 0),
+    4: ("\nRelative import goes beyond the scan directory: {0}:{1}.", 2)
 }
 
 
 def error(code, str_args=None):
-    assert code in ERRORS
-    err, args_required = ERRORS[code]
-    assert args_required == bool(str_args)
-    if args_required:
-        assert isinstance(str_args, (list, tuple))
-        err = err.format(*str_args)
+    str_args = str_args or []
+    err, args_count = ERRORS[code]
+    if not isinstance(str_args, (list, tuple)):
+        raise ArgumentError('String arguments must be tuple or list', code, str_args)
+    if len(str_args) != args_count:
+        raise ArgumentError('Mismatch between error code and string arguments', code, str_args)
+    err = err.format(*str_args)
     click.secho(err, fg='red', err=True)
     sys.exit(1)
 

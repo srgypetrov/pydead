@@ -375,13 +375,13 @@ data = {
             (1, ['filename', 'fatal'], "\nSyntax error in file filename: fatal."),
             (2, ['module', 'filename'],
              "\nUnable to detect unused names, 'from module import *' used in file filename."),
-            (2, None, 'error'),
-            (3, None, "\nNo files found."),
-            (3, ['filename'], 'error'),
+            (2, None, {'error': 'Mismatch between error code and string arguments'}),
+            (3, None, '\nNo files found.'),
+            (3, ['filename'], {'error': 'Mismatch between error code and string arguments'}),
             (4, ['filename', 15], "\nRelative import goes beyond the scan directory: filename:15."),
-            (4, 'filename', "error"),
-            (5, None, 'error'),
-            (6, ['filename'], 'error')
+            (4, 'filename', {'error': 'String arguments must be tuple or list'}),
+            ('a', None, 'error'),
+            ('b', ['filename'], 'error')
         ]
     },
     'test_report': {

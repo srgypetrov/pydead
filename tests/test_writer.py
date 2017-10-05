@@ -3,6 +3,7 @@ import pytest
 import sys
 
 from src import writer
+from src.exceptions import ArgumentError
 
 
 def test_separated(monkeypatch, arguments, expected):
@@ -33,8 +34,12 @@ def test_error(monkeypatch, code, str_args, expected):
     monkeypatch.setattr(click, 'secho', mock_secho)
     monkeypatch.setattr(sys, 'exit', lambda x: None)
 
-    if expected == 'error':
-        with pytest.raises(AssertionError):
+    if isinstance(expected, dict):
+        with pytest.raises(ArgumentError) as excinfo:
+            writer.error(code, str_args)
+        assert excinfo.value.args == (expected['error'], code, str_args or [])
+    elif expected == 'error':
+        with pytest.raises(KeyError):
             writer.error(code, str_args)
     else:
         writer.error(code, str_args)
