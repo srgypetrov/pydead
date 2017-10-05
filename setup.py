@@ -6,7 +6,8 @@ setup(
     author='Sergey Petrov',
     author_email='srgypetrov@ya.ru',
     url='https://github.com/SrgyPetrov/pydead',
-    description='Utility for searching of unused code in python projects',
+    description=('Utility for searching of unused code in python projects, '
+                 'such as module’s global classes, functions and names.'),
     packages=['src'],
     install_requires=['Click'],
     entry_points={
