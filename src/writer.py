@@ -28,7 +28,7 @@ def separated(text, fg, sepchar='='):
 
 
 def report(unused):
-    if unused:
+    if any(unused.values()):
         separated('UNUSED PYTHON CODE', fg='red')
         for name, items in sorted(unused.items()):
             for item in sorted(items, key=lambda x: (x['path'].lower(), x['node'].lineno)):

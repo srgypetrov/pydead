@@ -410,7 +410,11 @@ data = {
                  '- module_4.file_4:cyan25:redUnused function "func_4"yellow',
                  '- module_9.file_9:cyan30:redUnused name "name_9"yellow']
             ),
-            (None, ('NO UNUSED PYTHON CODE', 'green'), [])
+            (
+                {'class': [], 'function': [], 'name': []},
+                ('NO UNUSED PYTHON CODE', 'green'),
+                []
+            )
         ]
     }
 }
