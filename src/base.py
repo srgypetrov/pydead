@@ -1,9 +1,10 @@
-import click
 import os
+
+import click
 
 from .parse import PyFile
 from .search import search
-from .writer import report, error
+from .writer import error, report
 
 
 @click.command()
